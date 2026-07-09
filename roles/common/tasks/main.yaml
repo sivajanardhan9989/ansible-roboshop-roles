@@ -1,8 +1,6 @@
 ---
 - import_tasks: app-setup.yaml
 
-- include_tasks: "{{ app_type }}.yaml"
-
 - import_tasks: systemd-setup.yaml
 
 - import_tasks: restart.yaml
