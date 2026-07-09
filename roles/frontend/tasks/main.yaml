@@ -1,37 +1,42 @@
-
-- name: enable nginx 1.24
-  command: dnf module enable nginx:1.24 -y
-- name: install nginx
+---
+- name: Install Nginx
   package:
     name: nginx
     state: present
-- name: remove html directory
+
+- name: Remove old HTML content
   file:
-    path: /usr/share/nginx/html/
+    path: /usr/share/nginx/html
     state: absent
-- name: delete frontend.zip in tmp directory
+
+- name: Create HTML directory
+  file:
+    path: /usr/share/nginx/html
+    state: directory
+
+- name: Remove frontend zip
   file:
     path: /tmp/frontend.zip
     state: absent
-- name: create html directory
-  file:
-    path: /usr/share/nginx/html/
-    state: directory
-- name: download frontend
+
+- name: Download frontend
   get_url:
-    url: https://roboshop-artifacts.s3.amazonaws.com/frontend-v3.zip 
+    url: https://roboshop-artifacts.s3.amazonaws.com/frontend-v3.zip
     dest: /tmp/frontend.zip
-- name: unzip frontend
+
+- name: Extract frontend
   unarchive:
     src: /tmp/frontend.zip
-    dest: /usr/share/nginx/html/
+    dest: /usr/share/nginx/html
     remote_src: yes
-- name: remove nginx default conf
-  file:
-    path: /etc/nginx/nginx.conf
-    state: absent
-- name: copy nginx conf
+
+- name: Copy Roboshop Nginx configuration
   template:
     src: nginx.conf.j2
-    dest: /etc/nginx/nginx.conf
-  notify: restart nginx
+    dest: /etc/nginx/default.d/roboshop.conf
+
+- name: Enable and restart Nginx
+  service:
+    name: nginx
+    state: restarted
+    enabled: yes
