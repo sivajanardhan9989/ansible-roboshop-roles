@@ -31,3 +31,20 @@
     src: "/tmp/{{ component }}.zip"
     dest: /app
     remote_src: yes
+- import_role:
+    name: common
+    tasks_from: nodejs
+
+- import_role:
+    name: common
+    tasks_from: app-setup
+
+# Catalogue-specific tasks
+
+- import_role:
+    name: common
+    tasks_from: systemd-setup
+
+- import_role:
+    name: common
+    tasks_from: restart    
