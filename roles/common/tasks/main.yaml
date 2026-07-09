@@ -1,3 +1,12 @@
+---
 - name: This is the common task
   debug:
     msg: "Hi, from common tasks execution"
+
+- import_tasks: app-setup.yaml
+
+- import_tasks: "{{ app_type }}.yaml"
+
+- import_tasks: systemd-setup.yaml
+
+- import_tasks: restart.yaml
