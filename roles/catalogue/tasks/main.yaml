@@ -1,36 +1,4 @@
-- name: create roboshop system user
-  user:
-    name: roboshop
-    system: true
-    home: /app
-    shell: /sbin/nologin
-    comment: "Roboshop System user"
-
-- name: remove app directory
-  file:
-    path: /app
-    state: absent
-
-- name: "delete {{ component }}.zip in tmp directory"
-  file:
-    path: "/tmp/{{ component }}.zip"
-    state: absent
-
-- name: create app directory
-  file:
-    path: /app
-    state: directory
-
-- name: "download {{ component }}"
-  get_url:
-    url: "https://roboshop-artifacts.s3.amazonaws.com/{{ component }}-v3.zip"
-    dest: "/tmp/{{ component }}.zip"
-
-- name: "unzip {{ component }}"
-  unarchive:
-    src: "/tmp/{{ component }}.zip"
-    dest: /app
-    remote_src: yes
+---
 - import_role:
     name: common
     tasks_from: nodejs
@@ -39,7 +7,27 @@
     name: common
     tasks_from: app-setup
 
-# Catalogue-specific tasks
+- name: Install NodeJS dependencies
+  community.general.npm:
+    path: /app
+
+- name: Copy Mongo repo
+  copy:
+    src: mongo.repo
+    dest: /etc/yum.repos.d/mongo.repo
+
+- name: Install MongoDB client
+  package:
+    name: mongodb-mongosh
+    state: present
+
+- name: Check catalogue schema
+  shell: mongosh --host "{{ MONGODB_HOST }}" --eval 'db.getMongo().getDBNames().indexOf("catalogue")'
+  register: catalogue_output
+
+- name: Load catalogue schema
+  shell: mongosh --host "{{ MONGODB_HOST }}" </app/db/master-data.js
+  when: catalogue_output.stdout | int < 0
 
 - import_role:
     name: common
@@ -47,4 +35,4 @@
 
 - import_role:
     name: common
-    tasks_from: restart    
+    tasks_from: restart
