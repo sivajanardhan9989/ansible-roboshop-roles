@@ -1,0 +1,11 @@
+ansible_user: ec2-user
+ansible_password: DevOps321
+MONGODB_HOST: mongodb.janadevops.online
+REDIS_HOST: redis.janadevops.online
+MYSQL_HOST: mysql.janadevops.online 
+RABBITMQ_HOST: rabbitmq.janadevops.online 
+CATALOGUE_HOST: catalogue.janadevops.online
+USER_HOST: user.janadevops.online
+CART_HOST: cart.janadevops.online
+SHIPPING_HOST: shipping.janadevops.online
+PAYMENT_HOST: payment.janadevops.online
